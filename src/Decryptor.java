@@ -1,23 +1,23 @@
 import java.util.Map;
 
 public class Decryptor {
-	private Map<Character, Character> key;
-	private char[] cipherText;
-	private char[] initializationVector;
+	private Map<Byte, Byte> key;
+	private byte[] cipherText;
+	private byte[] initializationVector;
 	
-	public Decryptor(Map<Character, Character> key, char[] cipherText, char[] initializationVector) {
+	public Decryptor(Map<Byte, Byte> key, byte[] cipherText, byte[] initializationVector) {
 		this.key = key;
 		this.cipherText = cipherText;
 		this.initializationVector = initializationVector;
 	}
 
-	public char[] decrypt(int blockSize){
+	public byte[] decrypt(int blockSize){
 		int index = 0, i, j;
 		int numOfBlocks = cipherText.length / blockSize;
-		char[] plainToReturn = new char[cipherText.length];
+		byte[] plainToReturn = new byte[cipherText.length];
 
-		char[] blockDecrypted = decryptBlock(cipherText, 0, 9);
-		char[] blockXored = xorTexts(initializationVector, blockDecrypted, 0, 9);
+		byte[] blockDecrypted = decryptBlock(cipherText, 0, 9);
+		byte[] blockXored = xorTexts(initializationVector, blockDecrypted, 0, 9);
 
 		for (i = 0; i < blockSize; i++) {
 			plainToReturn[index++] = blockXored[i];
@@ -35,6 +35,7 @@ public class Decryptor {
 		return plainToReturn;
 	}
 
+	/*
 	public char[] decryptLimit(int blockSize, int maxNumOfWords){
 		int currentNumberOfWords = 0;
 		int index = 0, i, j;
@@ -73,9 +74,10 @@ public class Decryptor {
 
 		return plainToReturn;
 	}
+	*/
 	
-	private char[] decryptBlock(char[] block, int from, int to){
-		char[] returnPlain = new char[to-from+1];
+	private byte[] decryptBlock(byte[] block, int from, int to){
+		byte[] returnPlain = new byte[to-from+1];
 		int j = 0;
 		
 		for (int i = from; i <= to; i++) {
@@ -89,12 +91,12 @@ public class Decryptor {
 		return returnPlain;
 	}
 	
-	private char[] xorTexts(char[] sideA, char[] sideB, int sideBFrom, int sideBTo) {
-		char[] returnXor = new char[sideBTo-sideBFrom+1];
+	private byte[] xorTexts(byte[] sideA, byte[] sideB, int sideBFrom, int sideBTo) {
+		byte[] returnXor = new byte[sideBTo-sideBFrom+1];
 		int j = 0;
 		
 		for (int i = sideBFrom; i <= sideBTo; i++) {
-			returnXor[j] = (char) (sideA[j] ^ sideB[i]);
+			returnXor[j] = (byte)(sideA[j] ^ sideB[i]);
 			j++;
 		}
 		

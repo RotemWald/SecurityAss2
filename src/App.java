@@ -10,9 +10,9 @@ public class App {
 		String ivFilePath = "";
 		String outputFilePath = "";
 		
-		String inputText;
-		String ivText;
-		Map<Character, Character> key;
+		byte[] inputText;
+		byte[] ivText;
+		Map<Byte, Byte> key;
 		
 		for (int i=0; i<args.length; i++){
 			switch (args[i]) {
@@ -44,20 +44,20 @@ public class App {
 			case "sub_cbc_10":
 				if (mode.equals("encryption")) {
 					key = Utils.convertTextKeyIntoKeyHash(keyFilePath);
-					Encryptor encryptor = new Encryptor(inputText.toCharArray(), ivText.toCharArray(), key);
-					String result = new String(encryptor.encrypt(10));
+					Encryptor encryptor = new Encryptor(inputText, ivText, key);
+					byte[] result = encryptor.encrypt(10);
 					Utils.writeToFile(result, outputFilePath);
 				}
 				else if (mode.equals("decryption")) {
 					key = Utils.convertTextKeyIntoKeyHash(keyFilePath);
-					Decryptor decryptor = new Decryptor(key, inputText.toCharArray(), ivText.toCharArray());
-					String result = new String(decryptor.decrypt(10));
+					Decryptor decryptor = new Decryptor(key, inputText, ivText);
+					byte[] result = decryptor.decrypt(10);
 					Utils.writeToFile(result, outputFilePath);
 				}
 				else if (mode.equals("attack")) {
-					String dictionary = Utils.readFile("dictionary.txt");
+					String dictionary = new String(Utils.readFile("dictionary.txt"));
 					Attacker attacker = new Attacker(dictionary, inputText, ivText);
-					Map<Character, Character> chosenKey = attacker.attack();
+					Map<Byte, Byte> chosenKey = attacker.attack();
 					Utils.writeKeyToFile(chosenKey, outputFilePath);
 				}
 				

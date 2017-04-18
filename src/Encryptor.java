@@ -1,24 +1,24 @@
 import java.util.Map;
 
 public class Encryptor {
-	private char[] plainText;
-	private char[] initializationVector;
-	private Map<Character, Character> key;
+	private byte[] plainText;
+	private byte[] initializationVector;
+	private Map<Byte, Byte> key;
 	
-	public Encryptor(char[] plainText, char[] initializationVector, Map<Character, Character> key) {
+	public Encryptor(byte[] plainText, byte[] initializationVector, Map<Byte, Byte> key) {
 		this.plainText = plainText;
 		this.initializationVector = initializationVector;
 		this.key = key;
 	}
 	
-	public char[] encrypt(int blockSize) {
+	public byte[] encrypt(int blockSize) {
 		int index = 0, i, j;
-		char[] plainTextToEncrypt = padPlaintext(blockSize);
+		byte[] plainTextToEncrypt = padPlaintext(blockSize);
 		int numOfBlocks = plainTextToEncrypt.length / blockSize;
-		char[] cipherToReturn = new char[plainTextToEncrypt.length];
+		byte[] cipherToReturn = new byte[plainTextToEncrypt.length];
 		
-		char[] blockToEncrypt = xorTexts(initializationVector, plainTextToEncrypt, 0, 9);
-		char[] blockEncrypted = encryptBlock(blockToEncrypt, blockSize);
+		byte[] blockToEncrypt = xorTexts(initializationVector, plainTextToEncrypt, 0, 9);
+		byte[] blockEncrypted = encryptBlock(blockToEncrypt, blockSize);
 		
 		for (i = 0; i < blockSize; i++) {
 			cipherToReturn[index++] = blockEncrypted[i];
@@ -36,7 +36,7 @@ public class Encryptor {
 		return cipherToReturn;
 	}
 	
-	private char[] padPlaintext(int blockSize) {
+	private byte[] padPlaintext(int blockSize) {
 		int originalPtSize = plainText.length;
 		int padSize = originalPtSize % blockSize;
 		
@@ -46,7 +46,7 @@ public class Encryptor {
 		
 		else {
 			int i;
-			char[] newPlaintext = new char[originalPtSize + (10-padSize)];
+			byte[] newPlaintext = new byte[originalPtSize + (10-padSize)];
 			
 			for (i = 0; i < originalPtSize; i++) {
 				newPlaintext[i] = plainText[i];
@@ -60,8 +60,8 @@ public class Encryptor {
 		}
 	}
 	
-	private char[] encryptBlock(char[] block, int blockSize) {
-		char[] returnCipher = new char[blockSize];
+	private byte[] encryptBlock(byte[] block, int blockSize) {
+		byte[] returnCipher = new byte[blockSize];
 		
 		for (int i = 0; i < blockSize; i++) {
 			if (block[i] >= 'a' && block[i] <= 'h') {
@@ -76,12 +76,12 @@ public class Encryptor {
 		return returnCipher;
 	}
 	
-	private char[] xorTexts(char[] sideA, char[] sideB, int sideBFrom, int sideBTo) {
-		char[] returnXor = new char[sideBTo-sideBFrom+1];
+	private byte[] xorTexts(byte[] sideA, byte[] sideB, int sideBFrom, int sideBTo) {
+		byte[] returnXor = new byte[sideBTo-sideBFrom+1];
 		int j = 0;
 		
 		for (int i = sideBFrom; i <= sideBTo; i++) {
-			returnXor[j] = (char) (sideA[j] ^ sideB[i]);
+			returnXor[j] = (byte)(sideA[j] ^ sideB[i]);
 			j++;
 		}
 		
