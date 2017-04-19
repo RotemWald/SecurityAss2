@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,12 +36,24 @@ public class Utils {
 	}
 
 	public static void writeKeyToFile(Map<Byte, Byte> key, String fileName) throws IOException {
-		Files.write(Paths.get(fileName), () -> key.entrySet().stream()
-				.<CharSequence>map(e -> e.getKey() + " " + e.getValue())
-				.iterator());
+		FileOutputStream fs = new FileOutputStream(new File(fileName));
+		BufferedOutputStream bs = new BufferedOutputStream(fs);
+		byte[] bytesToWrite = new byte[3];
+
+		for (Entry<Byte, Byte> entry : key.entrySet()) {
+			bytesToWrite[0] = entry.getKey();
+			bytesToWrite[1] = ' ';
+			bytesToWrite[2] = entry.getValue();
+
+			bs.write(bytesToWrite);
+			bs.write(System.lineSeparator().getBytes());
+		}
+
+		bs.close();
 	}
+
 	
-	public static Byte getKeyByValue(Map <Byte, Byte> key,Byte value) {
+	public static Byte getKeyByValue(Map<Byte, Byte> key, Byte value) {
 	    for (Entry<Byte, Byte> entry : key.entrySet()) {
 	        if (Objects.equals(value, entry.getValue())) {
 	            return entry.getKey();
@@ -55,7 +64,7 @@ public class Utils {
 	
 	public static HashSet<String> createDictionaryFromFile(String dictionary){
 		HashSet<String> dictionarySet = new HashSet<String>();
-		String [] words = dictionary.split("\r\n");
+		String [] words = dictionary.split(System.lineSeparator());
 		for (String s: words){
 			dictionarySet.add(s);
 		}
@@ -85,32 +94,29 @@ public class Utils {
 		return list; 
 	}
 
-	private static Set<String> generatePerm(String input)
-	{
-	    Set<String> set = new HashSet<String>();
-	    if (input == "")
-	        return set;
+	private static Set<String> generatePerm(String input) {
+		Set<String> set = new HashSet<String>();
 
-	    Character a = input.charAt(0);
+		if (input == "")
+			return set;
 
-	    if (input.length() > 1)
-	    {
-	        input = input.substring(1);
+		Character a = input.charAt(0);
 
-	        Set<String> permSet = generatePerm(input);
+		if (input.length() > 1) {
+			input = input.substring(1);
+			Set<String> permSet = generatePerm(input);
 
-	        for (String x : permSet)
-	        {
-	            for (int i = 0; i <= x.length(); i++)
-	            {
-	                set.add(x.substring(0, i) + a + x.substring(i));
-	            }
-	        }
-	    }
-	    else
-	    {
-	        set.add(a + "");
-	    }
-	    return set;
+			for (String x : permSet) {
+				for (int i = 0; i <= x.length(); i++) {
+					set.add(x.substring(0, i) + a + x.substring(i));
+				}
+			}
+		}
+
+		else {
+			set.add(a + "");
+		}
+
+		return set;
 	}
 }
