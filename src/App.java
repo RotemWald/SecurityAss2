@@ -60,7 +60,23 @@ public class App {
 					Map<Byte, Byte> chosenKey = attacker.attack();
 					Utils.writeKeyToFile(chosenKey, outputFilePath);
 				}
-				
+
+				break;
+
+			case "sub_cbc_52":
+				if (mode.equals("encryption")) {
+					key = Utils.convertTextKeyIntoKeyHash(keyFilePath);
+					Encryptor encryptor = new Encryptor(inputText, ivText, key);
+					byte[] result = encryptor.encrypt(8128);
+					Utils.writeToFile(result, outputFilePath);
+				}
+				else if (mode.equals("decryption")) {
+					key = Utils.convertTextKeyIntoKeyHash(keyFilePath);
+					Decryptor decryptor = new Decryptor(key, inputText, ivText);
+					byte[] result = decryptor.decrypt(8128);
+					Utils.writeToFile(result, outputFilePath);
+				}
+
 				break;
 		}
 	}

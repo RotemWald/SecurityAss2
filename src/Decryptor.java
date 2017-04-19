@@ -16,16 +16,16 @@ public class Decryptor {
 		int numOfBlocks = cipherText.length / blockSize;
 		byte[] plainToReturn = new byte[cipherText.length];
 
-		byte[] blockDecrypted = decryptBlock(cipherText, 0, 9);
-		byte[] blockXored = xorTexts(initializationVector, blockDecrypted, 0, 9);
+		byte[] blockDecrypted = decryptBlock(cipherText, 0, blockSize-1);
+		byte[] blockXored = xorTexts(initializationVector, blockDecrypted, 0, blockSize-1);
 
 		for (i = 0; i < blockSize; i++) {
 			plainToReturn[index++] = blockXored[i];
 		}
 
 		for (i = 2; i <= numOfBlocks; i++) {
-			blockDecrypted = decryptBlock(cipherText, index, index+9);
-			blockXored = xorTexts(blockDecrypted, cipherText, index-10, index-1 );
+			blockDecrypted = decryptBlock(cipherText, index, index+blockSize-1);
+			blockXored = xorTexts(blockDecrypted, cipherText, index-blockSize, index-1 );
 
 			for (j = 0; j < blockSize; j++) {
 				plainToReturn[index++] = blockXored[j];
@@ -77,11 +77,15 @@ public class Decryptor {
 	*/
 	
 	private byte[] decryptBlock(byte[] block, int from, int to){
-		byte[] returnPlain = new byte[to-from+1];
+		int blockSize = to-from+1;
+		byte[] returnPlain = new byte[blockSize];
 		int j = 0;
 		
 		for (int i = from; i <= to; i++) {
-			if (block[i] >= 'a' && block[i] <= 'h') {
+			if ((blockSize == 10) && (block[i] >= 'a' && block[i] <= 'h'))  {
+				returnPlain[j++] = Utils.getKeyByValue(key, block[i]);
+			}
+			else if ((blockSize == 8128) && ((block[i] >= 'a' && block[i] <= 'z') || (block[i] >= 'A' && block[i] <= 'Z'))) {
 				returnPlain[j++] = Utils.getKeyByValue(key, block[i]);
 			}
 			else {

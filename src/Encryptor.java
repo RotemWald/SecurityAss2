@@ -17,7 +17,7 @@ public class Encryptor {
 		int numOfBlocks = plainTextToEncrypt.length / blockSize;
 		byte[] cipherToReturn = new byte[plainTextToEncrypt.length];
 		
-		byte[] blockToEncrypt = xorTexts(initializationVector, plainTextToEncrypt, 0, 9);
+		byte[] blockToEncrypt = xorTexts(initializationVector, plainTextToEncrypt, 0, blockSize-1);
 		byte[] blockEncrypted = encryptBlock(blockToEncrypt, blockSize);
 		
 		for (i = 0; i < blockSize; i++) {
@@ -25,7 +25,7 @@ public class Encryptor {
 		}
 		
 		for (i = 2; i <= numOfBlocks; i++) {
-			blockToEncrypt = xorTexts(blockEncrypted, plainTextToEncrypt, index, index+9);
+			blockToEncrypt = xorTexts(blockEncrypted, plainTextToEncrypt, index, index+blockSize-1);
 			blockEncrypted = encryptBlock(blockToEncrypt, blockSize);
 			
 			for (j = 0; j < blockSize; j++) {
@@ -46,7 +46,7 @@ public class Encryptor {
 		
 		else {
 			int i;
-			byte[] newPlaintext = new byte[originalPtSize + (10-padSize)];
+			byte[] newPlaintext = new byte[originalPtSize + (blockSize-padSize)];
 			
 			for (i = 0; i < originalPtSize; i++) {
 				newPlaintext[i] = plainText[i];
@@ -64,7 +64,11 @@ public class Encryptor {
 		byte[] returnCipher = new byte[blockSize];
 		
 		for (int i = 0; i < blockSize; i++) {
-			if (block[i] >= 'a' && block[i] <= 'h') {
+			if ((blockSize == 10) && (block[i] >= 'a' && block[i] <= 'h')) {
+				returnCipher[i] = key.get(block[i]);
+			}
+
+			else if ((blockSize == 8128) && ((block[i] >= 'a' && block[i] <= 'z') || (block[i] >= 'A' && block[i] <= 'Z'))) {
 				returnCipher[i] = key.get(block[i]);
 			}
 			
