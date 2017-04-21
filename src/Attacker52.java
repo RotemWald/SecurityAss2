@@ -1,4 +1,6 @@
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,7 +19,37 @@ public class Attacker52 {
         this.knownCiphertext = knownCiphertext;
     }
 
-    public Map<Byte, Byte> attack() {
+    public List<Map<Byte, Byte>> getPossibleKeys() {
+        Map<Byte, Byte> initialKey = discoverInitialKey();
+        List<Byte> missingKeys = new LinkedList<Byte>();
+        StringBuilder missingValuesSB = new StringBuilder();
+
+        byte currentByte;
+
+        for (currentByte = 'a'; currentByte <= 'z'; currentByte++) {
+            if (!initialKey.containsKey(currentByte)) {
+                missingKeys.add(currentByte);
+            }
+
+            if (!initialKey.containsValue(currentByte)) {
+                missingValuesSB.append(currentByte);
+            }
+        }
+
+        for (currentByte = 'A'; currentByte <= 'Z'; currentByte++) {
+            if (!initialKey.containsKey(currentByte)) {
+                missingKeys.add(currentByte);
+            }
+
+            if (!initialKey.containsValue(currentByte)) {
+                missingValuesSB.append(currentByte);
+            }
+        }
+
+        return Utils.generateKeyListByKeysAndValues(missingKeys, missingValuesSB.toString());
+    }
+
+    private Map<Byte, Byte> discoverInitialKey() {
         Map<Byte, Byte> chosenKey = new HashMap<Byte, Byte>();
 
         byte[] knownPlaintextPadded = padKnownPlaintext();

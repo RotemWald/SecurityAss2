@@ -10,9 +10,9 @@ public class Attacker {
 	private byte[] cipherText;
 	private byte[] initVector;
 	
-	public Attacker(String dictionary, byte[] cipherText, byte[] initVector) throws UnsupportedEncodingException {
+	public Attacker(List<Map<Byte, Byte>> possibleKeys, String dictionary, byte[] cipherText, byte[] initVector) throws UnsupportedEncodingException {
 		this.dictionary = Utils.createDictionaryFromFile(dictionary);
-		this.possibleKeys = Utils.generateKeyList("abcdefgh");
+		this.possibleKeys = possibleKeys;
 		this.cipherText = cipherText;
 		this.initVector = initVector;
 	}

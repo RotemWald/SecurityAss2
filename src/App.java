@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Map;
 import java.io.*;
 
@@ -64,7 +65,8 @@ public class App {
 				}
 				else if (mode.equals("attack")) {
 					String dictionary = new String(Utils.readFile("dictionary.txt"));
-					Attacker attacker = new Attacker(dictionary, inputText, ivText);
+					List<Map<Byte, Byte>> possibleKeys = Utils.generateKeyList("abcdefgh");
+					Attacker attacker = new Attacker(possibleKeys, dictionary, inputText, ivText);
 					Map<Byte, Byte> chosenKey = attacker.attack();
 					Utils.writeKeyToFile(chosenKey, outputFilePath);
 				}
@@ -89,7 +91,10 @@ public class App {
 					byte[] knownCiphertextBytes = Utils.readFile(knownCiphertextPath);
 
 					Attacker52 attacker52 = new Attacker52(ivText, inputText, knownPlaintextBytes, knownCiphertextBytes);
-					Map<Byte, Byte> chosenKey = attacker52.attack();
+					List<Map<Byte, Byte>> possibleKeys = attacker52.getPossibleKeys();
+					String dictionary = new String(Utils.readFile("dictionary.txt"));
+					Attacker attacker = new Attacker(possibleKeys, dictionary, inputText, ivText);
+					Map<Byte, Byte> chosenKey = attacker.attack();
 					Utils.writeKeyToFile(chosenKey, outputFilePath);
 				}
 

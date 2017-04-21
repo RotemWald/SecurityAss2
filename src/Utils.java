@@ -70,15 +70,15 @@ public class Utils {
 		}
 		return dictionarySet;
 	}
-	
+
 	public static List<Map<Byte, Byte>> generateKeyList(String keyValues) throws UnsupportedEncodingException {
 		List<Map<Byte, Byte>> list = new ArrayList<Map<Byte, Byte>>();
 		Set<String> possibleKeysAsStrings = generatePerm(keyValues);
 		Map<Byte, Byte> mapToAdd = null;
-		
+
 		for (String s : possibleKeysAsStrings) {
 			mapToAdd = new HashMap<Byte, Byte>();
-			
+
 			mapToAdd.put((byte)('a'), s.getBytes("UTF-8")[0]);
 			mapToAdd.put((byte)('b'), s.getBytes("UTF-8")[1]);
 			mapToAdd.put((byte)('c'), s.getBytes("UTF-8")[2]);
@@ -87,11 +87,30 @@ public class Utils {
 			mapToAdd.put((byte)('f'), s.getBytes("UTF-8")[5]);
 			mapToAdd.put((byte)('g'), s.getBytes("UTF-8")[6]);
 			mapToAdd.put((byte)('h'), s.getBytes("UTF-8")[7]);
-			
+
 			list.add(mapToAdd);
 		}
-		
-		return list; 
+
+		return list;
+	}
+
+	public static List<Map<Byte, Byte>> generateKeyListByKeysAndValues(List<Byte> keys, String keyValues) {
+		List<Map<Byte, Byte>> list = new ArrayList<Map<Byte, Byte>>();
+		Set<String> possibleKeysAsStrings = generatePerm(keyValues);
+		Map<Byte, Byte> mapToAdd = null;
+		int i;
+
+		for (String s : possibleKeysAsStrings) {
+			mapToAdd = new HashMap<Byte, Byte>();
+			i = 0;
+
+			for (Byte b : keys) {
+				mapToAdd.put(b, s.getBytes()[i++]);
+			}
+			list.add(mapToAdd);
+		}
+
+		return list;
 	}
 
 	private static Set<String> generatePerm(String input) {
