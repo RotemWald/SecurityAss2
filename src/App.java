@@ -9,6 +9,8 @@ public class App {
 		String keyFilePath = "";
 		String ivFilePath = "";
 		String outputFilePath = "";
+		String knownPlaintextPath = "";
+		String knownCiphertextPath = "";
 		
 		byte[] inputText;
 		byte[] ivText;
@@ -33,6 +35,12 @@ public class App {
 					break;
 				case "-o":
 					outputFilePath = args[++i];
+					break;
+				case "-kp":
+					knownPlaintextPath = args[++i];
+					break;
+				case "-kc":
+					knownCiphertextPath = args[++i];
 					break;
 			}
 		}
@@ -75,6 +83,14 @@ public class App {
 					Decryptor decryptor = new Decryptor(key, inputText, ivText);
 					byte[] result = decryptor.decrypt(8128);
 					Utils.writeToFile(result, outputFilePath);
+				}
+				else if (mode.equals("attack")) {
+					byte[] knownPlaintextBytes = Utils.readFile(knownPlaintextPath);
+					byte[] knownCiphertextBytes = Utils.readFile(knownCiphertextPath);
+
+					Attacker52 attacker52 = new Attacker52(ivText, inputText, knownPlaintextBytes, knownCiphertextBytes);
+					Map<Byte, Byte> chosenKey = attacker52.attack();
+					Utils.writeKeyToFile(chosenKey, outputFilePath);
 				}
 
 				break;
