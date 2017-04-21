@@ -22,7 +22,7 @@ public class Attacker52 {
     public List<Map<Byte, Byte>> getPossibleKeys() {
         Map<Byte, Byte> initialKey = discoverInitialKey();
         List<Byte> missingKeys = new LinkedList<Byte>();
-        StringBuilder missingValuesSB = new StringBuilder();
+        List<Byte> missingValues = new LinkedList<Byte>();
 
         byte currentByte;
 
@@ -32,7 +32,7 @@ public class Attacker52 {
             }
 
             if (!initialKey.containsValue(currentByte)) {
-                missingValuesSB.append(currentByte);
+                missingValues.add(currentByte);
             }
         }
 
@@ -42,11 +42,12 @@ public class Attacker52 {
             }
 
             if (!initialKey.containsValue(currentByte)) {
-                missingValuesSB.append(currentByte);
+                missingValues.add(currentByte);
             }
         }
 
-        return Utils.generateKeyListByKeysAndValues(missingKeys, missingValuesSB.toString());
+        String missingValuesAsString = Utils.convertListOfBytesToString(missingValues);
+        return Utils.generateKeyListByPartialKeysAndValues(missingKeys, missingValuesAsString, initialKey);
     }
 
     private Map<Byte, Byte> discoverInitialKey() {

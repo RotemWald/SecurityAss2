@@ -17,7 +17,7 @@ public class Attacker {
 		this.initVector = initVector;
 	}
 
-	public Map<Byte, Byte> attack() {
+	public Map<Byte, Byte> attack(int blockSize) {
 		Map<Byte, Byte> chosenKey = null;
 		Decryptor decryptor;
 		int currentKnownWords;
@@ -31,7 +31,7 @@ public class Attacker {
 
 		for (Map<Byte, Byte> currentKey : possibleKeys) {
 			decryptor = new Decryptor(currentKey, Arrays.copyOfRange(cipherText, 0, cipherTextLengthToCheck), initVector);
-			String plain = new String(decryptor.decrypt(10));
+			String plain = new String(decryptor.decrypt(blockSize));
 
 			String[] plainWords = plain.split("\\s+");
 			currentKnownWords = 0;

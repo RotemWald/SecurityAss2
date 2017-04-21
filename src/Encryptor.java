@@ -39,7 +39,7 @@ public class Encryptor {
 	private byte[] padPlaintext(int blockSize) {
 		int originalPtSize = plainText.length;
 		int padSize = originalPtSize % blockSize;
-		
+
 		if (padSize == 0) {
 			return plainText;
 		}

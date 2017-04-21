@@ -1,3 +1,5 @@
+import com.sun.tools.javac.util.ArrayUtils;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -94,23 +96,42 @@ public class Utils {
 		return list;
 	}
 
-	public static List<Map<Byte, Byte>> generateKeyListByKeysAndValues(List<Byte> keys, String keyValues) {
+	public static List<Map<Byte, Byte>> generateKeyListByPartialKeysAndValues(List<Byte> keys, String keyValues, Map<Byte, Byte> partialKey) {
 		List<Map<Byte, Byte>> list = new ArrayList<Map<Byte, Byte>>();
+
+		if (keyValues.isEmpty()) {
+			list.add(partialKey);
+			return list;
+		}
+
 		Set<String> possibleKeysAsStrings = generatePerm(keyValues);
 		Map<Byte, Byte> mapToAdd = null;
 		int i;
 
 		for (String s : possibleKeysAsStrings) {
 			mapToAdd = new HashMap<Byte, Byte>();
+			mapToAdd.putAll(partialKey);
 			i = 0;
 
 			for (Byte b : keys) {
 				mapToAdd.put(b, s.getBytes()[i++]);
 			}
+
 			list.add(mapToAdd);
 		}
 
 		return list;
+	}
+
+	public static String convertListOfBytesToString(List<Byte> list) {
+		int i = 0;
+		byte[] bytesList = new byte[list.size()];
+
+		for (Byte b : list) {
+			bytesList[i++] = b;
+		}
+
+		return new String(bytesList);
 	}
 
 	private static Set<String> generatePerm(String input) {
