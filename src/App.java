@@ -64,7 +64,7 @@ public class App {
 					Utils.writeToFile(result, outputFilePath);
 				}
 				else if (mode.equals("attack")) {
-					String dictionary = new String(Utils.readFile("dictionary.txt"));
+					String dictionary = new String(Utils.readFile("resources/dictionary.txt"));
 					List<Map<Byte, Byte>> possibleKeys = Utils.generateKeyList("abcdefgh");
 					Attacker attacker = new Attacker(possibleKeys, dictionary, inputText, ivText);
 					Map<Byte, Byte> chosenKey = attacker.attack(10);
@@ -92,7 +92,7 @@ public class App {
 
 					Attacker52 attacker52 = new Attacker52(ivText, inputText, knownPlaintextBytes, knownCiphertextBytes);
 					List<Map<Byte, Byte>> possibleKeys = attacker52.getPossibleKeys();
-					String dictionary = new String(Utils.readFile("dictionary.txt"));
+					String dictionary = new String(Utils.readFile("resources/dictionary.txt"));
 					Attacker attacker = new Attacker(possibleKeys, dictionary, inputText, ivText);
 					Map<Byte, Byte> chosenKey = attacker.attack(8128);
 					Utils.writeKeyToFile(chosenKey, outputFilePath);
