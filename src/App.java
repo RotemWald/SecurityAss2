@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Map;
 import java.io.*;
 
@@ -9,10 +10,12 @@ public class App {
 		String keyFilePath = "";
 		String ivFilePath = "";
 		String outputFilePath = "";
+		String knownPlaintextPath = "";
+		String knownCiphertextPath = "";
 		
-		String inputText;
-		String ivText;
-		Map<Character, Character> key;
+		byte[] inputText;
+		byte[] ivText;
+		Map<Byte, Byte> key;
 		
 		for (int i=0; i<args.length; i++){
 			switch (args[i]) {
@@ -34,6 +37,12 @@ public class App {
 				case "-o":
 					outputFilePath = args[++i];
 					break;
+				case "-kp":
+					knownPlaintextPath = args[++i];
+					break;
+				case "-kc":
+					knownCiphertextPath = args[++i];
+					break;
 			}
 		}
 		
@@ -44,23 +53,51 @@ public class App {
 			case "sub_cbc_10":
 				if (mode.equals("encryption")) {
 					key = Utils.convertTextKeyIntoKeyHash(keyFilePath);
-					Encryptor encryptor = new Encryptor(inputText.toCharArray(), ivText.toCharArray(), key);
-					String result = new String(encryptor.encrypt(10));
+					Encryptor encryptor = new Encryptor(inputText, ivText, key);
+					byte[] result = encryptor.encrypt(10);
 					Utils.writeToFile(result, outputFilePath);
 				}
 				else if (mode.equals("decryption")) {
 					key = Utils.convertTextKeyIntoKeyHash(keyFilePath);
-					Decryptor decryptor = new Decryptor(key, inputText.toCharArray(), ivText.toCharArray());
-					String result = new String(decryptor.decrypt(10));
+					Decryptor decryptor = new Decryptor(key, inputText, ivText);
+					byte[] result = decryptor.decrypt(10);
 					Utils.writeToFile(result, outputFilePath);
 				}
 				else if (mode.equals("attack")) {
-					String dictionary = Utils.readFile("dictionary.txt");
-					Attacker attacker = new Attacker(dictionary, inputText, ivText);
-					Map<Character, Character> chosenKey = attacker.attack();
+					String dictionary = new String(Utils.readFile("resources/dictionary.txt"));
+					List<Map<Byte, Byte>> possibleKeys = Utils.generateKeyList("abcdefgh");
+					Attacker attacker = new Attacker(possibleKeys, dictionary, inputText, ivText);
+					Map<Byte, Byte> chosenKey = attacker.attack(10);
 					Utils.writeKeyToFile(chosenKey, outputFilePath);
 				}
-				
+
+				break;
+
+			case "sub_cbc_52":
+				if (mode.equals("encryption")) {
+					key = Utils.convertTextKeyIntoKeyHash(keyFilePath);
+					Encryptor encryptor = new Encryptor(inputText, ivText, key);
+					byte[] result = encryptor.encrypt(8128);
+					Utils.writeToFile(result, outputFilePath);
+				}
+				else if (mode.equals("decryption")) {
+					key = Utils.convertTextKeyIntoKeyHash(keyFilePath);
+					Decryptor decryptor = new Decryptor(key, inputText, ivText);
+					byte[] result = decryptor.decrypt(8128);
+					Utils.writeToFile(result, outputFilePath);
+				}
+				else if (mode.equals("attack")) {
+					byte[] knownPlaintextBytes = Utils.readFile(knownPlaintextPath);
+					byte[] knownCiphertextBytes = Utils.readFile(knownCiphertextPath);
+
+					Attacker52 attacker52 = new Attacker52(ivText, inputText, knownPlaintextBytes, knownCiphertextBytes);
+					List<Map<Byte, Byte>> possibleKeys = attacker52.getPossibleKeys();
+					String dictionary = new String(Utils.readFile("resources/dictionary.txt"));
+					Attacker attacker = new Attacker(possibleKeys, dictionary, inputText, ivText);
+					Map<Byte, Byte> chosenKey = attacker.attack(8128);
+					Utils.writeKeyToFile(chosenKey, outputFilePath);
+				}
+
 				break;
 		}
 	}

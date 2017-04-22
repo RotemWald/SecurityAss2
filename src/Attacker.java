@@ -1,35 +1,37 @@
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class Attacker {
 	private Set<String> dictionary;
-	private List<Map<Character, Character>> possibleKeys;
-	private String cipherText;
-	private String initVector;
+	private List<Map<Byte, Byte>> possibleKeys;
+	private byte[] cipherText;
+	private byte[] initVector;
 	
-	public Attacker(String dictionary, String cipherText, String initVector) {
+	public Attacker(List<Map<Byte, Byte>> possibleKeys, String dictionary, byte[] cipherText, byte[] initVector) throws UnsupportedEncodingException {
 		this.dictionary = Utils.createDictionaryFromFile(dictionary);
-		this.possibleKeys = Utils.generateKeyList("abcdefgh");
+		this.possibleKeys = possibleKeys;
 		this.cipherText = cipherText;
 		this.initVector = initVector;
 	}
 
-	public Map<Character, Character> attack() {
-		Map<Character, Character> chosenKey = null;
+	public Map<Byte, Byte> attack(int blockSize) {
+		Map<Byte, Byte> chosenKey = null;
 		Decryptor decryptor;
 		int currentKnownWords;
 		int bestKnownWords = 0;
 
 		// Average word length in English equals to 5 characters.
-		// Let's check up to 2000 words in a given cipher text.
-		int cipherTextAvgWords = cipherText.length() / 5;
+		// Let's check up to x words in a given cipher text.
+		int cipherTextAvgWords = cipherText.length / 5;
 		int cipherTextLengthOfWordsToCheck = Math.min(cipherTextAvgWords, 70);
 		int cipherTextLengthToCheck = cipherTextLengthOfWordsToCheck * 5;
 
-		for (Map<Character, Character> currentKey : possibleKeys) {
-			decryptor = new Decryptor(currentKey, cipherText.substring(0, cipherTextLengthToCheck).toCharArray(), initVector.toCharArray());
-			String plain = new String(decryptor.decrypt(10));
+		for (Map<Byte, Byte> currentKey : possibleKeys) {
+			decryptor = new Decryptor(currentKey, Arrays.copyOfRange(cipherText, 0, cipherTextLengthToCheck), initVector);
+			String plain = new String(decryptor.decrypt(blockSize));
 
 			String[] plainWords = plain.split("\\s+");
 			currentKnownWords = 0;
