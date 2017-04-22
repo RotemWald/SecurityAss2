@@ -18,6 +18,20 @@ public class Utils {
 		byte[] bytesContent = Files.readAllBytes(Paths.get(fileName));
 		return bytesContent;
 	}
+
+	public static String readFileToStringFromJar(String inputFilePath) throws IOException {
+		InputStream in = Utils.class.getResourceAsStream(inputFilePath);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+
+		StringBuilder builder = new StringBuilder();
+		String aux;
+
+		while ((aux = reader.readLine()) != null) {
+			builder.append(aux);
+		}
+
+		return builder.toString();
+	}
 	
 	public static void writeToFile(byte[] content, String filePath) throws IOException {
 		Files.write(Paths.get(filePath), content);
