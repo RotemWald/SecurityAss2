@@ -24,7 +24,7 @@ public class Attacker {
 		int bestKnownWords = 0;
 
 		// Average word length in English equals to 5 characters.
-		// Let's check up to x words in a given cipher text.
+		// Let's check up to 2000 words in a given cipher text.
 		int cipherTextAvgWords = cipherText.length / 5;
 		int cipherTextLengthOfWordsToCheck = Math.min(cipherTextAvgWords, 2000);
 		int cipherTextLengthToCheck = cipherTextLengthOfWordsToCheck * 5;
