@@ -1,8 +1,5 @@
-import com.sun.tools.javac.util.ArrayUtils;
-
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,20 +14,6 @@ public class Utils {
 	public static byte[] readFile(String fileName) throws IOException {
 		byte[] bytesContent = Files.readAllBytes(Paths.get(fileName));
 		return bytesContent;
-	}
-
-	public static String readFileToStringFromJar(String inputFilePath) throws IOException {
-		InputStream in = Utils.class.getResourceAsStream(inputFilePath);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-
-		StringBuilder builder = new StringBuilder();
-		String aux;
-
-		while ((aux = reader.readLine()) != null) {
-			builder.append(aux);
-		}
-
-		return builder.toString();
 	}
 	
 	public static void writeToFile(byte[] content, String filePath) throws IOException {
@@ -118,7 +101,17 @@ public class Utils {
 			return list;
 		}
 
-		Set<String> possibleKeysAsStrings = generatePerm(keyValues);
+		StringPermutation sp = new StringPermutation(keyValues);
+		Set<String> possibleKeysAsStrings = new HashSet<String>();
+		int k = 0;
+
+		for (String s : sp) {
+			possibleKeysAsStrings.add(s);
+			if (++k == 40320) {
+				break;
+			}
+		}
+
 		Map<Byte, Byte> mapToAdd = null;
 		int i;
 
